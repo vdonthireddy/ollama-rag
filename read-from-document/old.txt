@@ -1,0 +1,105 @@
+
+# print(retrieved_docs[0].page_content)
+
+# import pandas as pd
+# from transformers import AutoModelForQuestionAnswering, AutoTokenizer
+
+# model = AutoModelForQuestionAnswering.from_pretrained("llama-base- question-answering")
+# tokenizer = AutoTokenizer.from_pretrained("llama-base-question-answering")
+
+# document_text = pd.read_csv('./India.txt', header=None).values[0]
+
+# inputs = tokenizer.encode_plus(document_text, 
+#                                  add_special_tokens=True, 
+#                                  max_length=512, 
+#                                  return_attention_mask=True, 
+#                                  return_tensors='pt')
+
+# questions = ["What is the main topic of this document?", "What is the popular sport in India?"]
+
+# for question in questions:
+#     inputs["input_ids"] = tokenizer.encode(question, add_special_tokens=True)
+#     outputs = model(**inputs)
+#     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
+#     answers.append(answer)
+
+# print(answers)  # Print the answers!
+
+
+
+
+# import bs4
+# from langchain_community.document_loaders import WebBaseLoader
+
+# # LOAD the data from a web url
+# bs4_strainer = bs4.SoupStrainer(class_=("post-title", "post-header", "post-content"))
+# loader = WebBaseLoader(
+#     web_paths=("https://lilianweng.github.io/posts/2023-06-23-agent/",),
+#     bs_kwargs={"parse_only": bs4_strainer},
+# )
+
+persist_directory = 'vectorindex'
+
+from langchain_community.document_loaders import PyPDFLoader
+
+loader = PyPDFLoader("data/India.pdf")
+# pages = loader.load_and_split()
+
+docs = loader.load()
+
+print('loaded.')
+
+# SPLIT data into chunks before storing them in vector db
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000, chunk_overlap=200, add_start_index=True
+)
+all_splits = text_splitter.split_documents(docs)
+
+print('split complete.')
+
+# STORE the embeddings (array of ints) in vector db
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_chroma import Chroma
+
+vectorstore = Chroma.from_documents(
+    documents=all_splits, 
+    embedding=OllamaEmbeddings(model="nomic-embed-text"),
+    persist_directory = persist_directory,
+)
+
+print('stored.')
+
+#RETRIEVER: 
+retriever = vectorstore.as_retriever(persist_directory=persist_directory,search_type="similarity", search_kwargs={"k": 6})
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+template = """Use the following pieces of context to answer the question at the end.
+If you don't know the answer, just say that you don't know, don't try to make up an answer.
+Use three sentences maximum and keep the answer as concise as possible.
+Always say "thanks for asking!" at the end of the answer.
+
+{context}
+
+Question: {question}
+
+Helpful Answer:"""
+
+from langchain_core.prompts import PromptTemplate
+custom_rag_prompt = PromptTemplate.from_template(template)
+
+from langchain_community.llms import Ollama
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+rag_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | custom_rag_prompt
+    | Ollama(model="llama3")
+    | StrOutputParser()
+)
+
+response = rag_chain.invoke("What is the capital of India?")
+
+print(response)

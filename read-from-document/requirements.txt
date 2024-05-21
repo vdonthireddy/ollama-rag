@@ -1,0 +1,12 @@
+# conda create --name vj python=3.9   
+transformers   
+pandas
+bs4    
+langchain_community
+langchain
+chroma    
+langchain_chroma       
+langchain-nomic   
+langchainhub     
+langchain_core   
+pypdf

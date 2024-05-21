@@ -39,4 +39,4 @@ docker exec -it ollama ollama run llama3
 python main.py
 ```
 
-## please note that you may need to change the code to edit the question. Good luck and Thank you!
+## Please note that you may need to change the code to edit the question. Good luck and Thank you!

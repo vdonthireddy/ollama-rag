@@ -15,7 +15,7 @@ print('started at: ' + str(datetime.now()))
 
 persist_directory = 'vectorindex'
 
-if False:
+if True: # After the first time (once the document is loaded, split and vectors saved in vectordb), you can set this condition to False 
 
     # from langchain_community.document_loaders import PyPDFLoader
     from langchain_community.document_loaders import TextLoader
@@ -38,7 +38,6 @@ if False:
     print('split complete.: ' + str(datetime.now()))
 
     # STORE the embeddings (array of ints) in vector db
-
     vectorstore = Chroma.from_documents(
         documents=all_splits, 
         embedding=OllamaEmbeddings(model="nomic-embed-text"),

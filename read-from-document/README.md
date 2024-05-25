@@ -21,10 +21,11 @@ pip install -r ./requirements.txt
 ## Make sure the docker app is running on your Mac and pull the open source framework to run Large Language Models locally...
 ### pull the docker image ollama/ollama
 ### run the docker container and expose port 11434 so that application can connect to this framework via APIs
-### pull all required LLMs and Embedding Models (here we are pulling llama3 and nomic-embed-text). But you can also use other models like gemma, mistral, etc.. Fora list of supported models, you can visit: https://ollama.com/library?sort=popular
+### pull all required LLMs and Embedding Models (here we are pulling mistral, llama3 and nomic-embed-text). But you can also use other models like gemma, etc.. Fora list of supported models, you can visit: https://ollama.com/library?sort=popular
 ```
 docker pull ollama/ollama
 docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+docker exec -it ollama ollama pull mistral
 docker exec -it ollama ollama pull llama3
 docker exec -it ollama ollama pull nomic-embed-text
 ```
@@ -34,9 +35,14 @@ docker exec -it ollama ollama pull nomic-embed-text
 docker exec -it ollama ollama run llama3
 ```
 
-## Run the code in terminal to see the response
+## Run the code in terminal to see the response with no RAG
 ```
-python main.py
+python norag.py
+```
+
+## Run the code in terminal to see the response with RAG
+```
+python withrag.py
 ```
 
 ## Please note that you may need to change the code to edit the question. Good luck and Thank you!

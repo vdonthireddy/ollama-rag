@@ -15,7 +15,7 @@ print('started at: ' + str(datetime.now()))
 
 persist_directory = 'vectorindex'
 
-if True: # After the first time (once the document is loaded, split and vectors saved in vectordb), you can set this condition to False 
+if False:
 
     # from langchain_community.document_loaders import PyPDFLoader
     from langchain_community.document_loaders import TextLoader
@@ -38,6 +38,7 @@ if True: # After the first time (once the document is loaded, split and vectors 
     print('split complete.: ' + str(datetime.now()))
 
     # STORE the embeddings (array of ints) in vector db
+
     vectorstore = Chroma.from_documents(
         documents=all_splits, 
         embedding=OllamaEmbeddings(model="nomic-embed-text"),
@@ -80,7 +81,7 @@ rag_chain = (
     | StrOutputParser()
 )
 
-# response = rag_chain.invoke("What is the capital of USA?")
+response = rag_chain.invoke("What is the capital of USA?")
 # response = rag_chain.invoke("When did Bharat get independence")
 # response = rag_chain.invoke("Vijay is the citizen of which country in 2024?")
 # response = rag_chain.invoke("Vijay is the citizen of which country in 1978?")
@@ -90,7 +91,7 @@ rag_chain = (
 # response = rag_chain.invoke("What is the most popular sport?")
 # response = rag_chain.invoke("What is Bharat famous for?")
 # response = rag_chain.invoke("Where was Vijay born")
-response = rag_chain.invoke("If Vijay was born in 1975, what was his birth country Bharat or USA?")
+# response = rag_chain.invoke("If Vijay was born in 1975, what was his birth country Bharat or USA?")
 
 print(response)
 print('ended at: ' + str(datetime.now()))

@@ -44,5 +44,9 @@ python norag.py
 ```
 python withrag.py
 ```
+## Run the code in terminal to see the response with RAG on PDF document(s)
+```
+python fromPdf.py
+```
 
 ## Please note that you may need to change the code to edit the question. Good luck and Thank you!

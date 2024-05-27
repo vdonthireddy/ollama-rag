@@ -4,9 +4,12 @@ pandas
 bs4    
 langchain_community
 langchain
+langchain_openai 
+tavily-python
 chroma    
 langchain_chroma       
 langchain-nomic   
 langchainhub     
-langchain_core   
+langchain-core   
 pypdf
+langgraph
